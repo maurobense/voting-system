@@ -1,7 +1,50 @@
+let btn = document.getElementById('btn');
+
 (function () {
 
     let playerId;
     let playerRef;
+    let msjRef;
+
+    btn.addEventListener('click', sendMsj)
+
+    function sendMsj(){
+        let message = document.getElementById('msj').value;
+        msjRef = firebase.database().ref(`players/${playerId}/msj`);
+        const messagges = firebase.database().ref('messages');
+
+        messagges.push(message)
+
+        msjRef.push(message)
+
+    }
+    function showMsg() {
+        const messages = firebase.database().ref('messages');
+
+        messages.on('child_added', (snap) => {
+            const arr = snap.val()
+            console.log(arr)
+        })
+
+
+    }
+    function test() {
+        const players = firebase.database().ref('players');
+
+        console.log(playerId)
+
+        players.on('child_added', (snap) => {
+            const arr = snap.val()
+            console.log(`${arr.name} joined`)
+        })
+
+        players.on('child_removed', (snap) => {
+            const arr = snap.val()
+            console.log(`${arr.name} left`)
+        })
+
+    }
+  
     firebase.auth().onAuthStateChanged((user) => {
 
         if (user) {
@@ -11,21 +54,24 @@
 
             playerRef.set({
                 id: playerId,
-                name: "SOME",
-                color: "red"
+                name: Math.floor(Math.random() * 100),
+                color: "red",
+                msj: []
             })
+            
+
             //Remove player when disconnected.
-            console.log(user)
+            
             playerRef.onDisconnect().remove();
+            test();
+            showMsg();
 
         } else {
             //Logged out!
 
         }
 
-        firebase.database().ref('competidores').on('value', (snap) => {
-            console.log(snap.val());
-        });
+
     })
 
     firebase.auth().signInAnonymously().catch(e => {
@@ -34,4 +80,8 @@
 
         console.log(errorCode, errorMessage);
     });
+
+
 })();
+
+
