@@ -1,4 +1,5 @@
 let btn = document.getElementById('btn');
+let showMsj = document.getElementById('msjs');
 
 (function () {
 
@@ -23,7 +24,7 @@ let btn = document.getElementById('btn');
 
         messages.on('child_added', (snap) => {
             const arr = snap.val()
-            console.log(arr)
+            showMsj.innerHTML += `<p>${arr}</p>`
         })
 
 
